@@ -1,0 +1,10 @@
+spring.security.oauth2:
+  client:
+    provider:
+      keycloak:
+        issuer-uri: http://127.0.0.1:8081/realms/master
+  resourceserver:
+    jwt:
+      issuer-uri: http://127.0.0.1:8081/realms/master
+
+server.port: 8091

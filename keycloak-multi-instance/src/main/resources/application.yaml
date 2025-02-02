@@ -1,0 +1,12 @@
+spring.application.name: demo-resource-server
+
+spring.security.oauth2:
+  client:
+    registration:
+      keycloak:
+        provider: keycloak
+        client-id: rize-platform
+        client-secret: h7fcjsNXgiDzmhKDflJNGe89H33L8qev
+        authorization-grant-type: authorization_code
+        redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
+        scope: openid, profile
