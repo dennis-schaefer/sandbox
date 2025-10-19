@@ -1,0 +1,23 @@
+spring.application.name: spring-client-app-with-observability
+---
+server:
+  port: 8080
+---
+spring.cloud.consul:
+  host: localhost
+  port: 8500
+  discovery:
+    instance-id: ${spring.application.name}:application-test:${server.port}
+    tags: prometheus-scrape
+    deregister: false
+    health-check-path: /actuator/health
+    health-check-interval: 15s
+    health-check-tls-skip-verify: true
+    prefer-ip-address: true
+    ip-address: 192.168.178.34
+
+---
+management:
+  endpoints.web.exposure.include: "health,info,prometheus"
+  tracing.sampling.probability: 1
+  otlp.tracing.endpoint: http://localhost:4318/v1/traces

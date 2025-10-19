@@ -1,0 +1,61 @@
+services:
+  prometheus:
+    image: prom/prometheus:v3.6.0
+    container_name: scawo_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  loki:
+    image: grafana/loki:3.5.5
+    container_name: scawo_loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./config/loki-config.yml:/etc/loki/local-config.yaml
+    command:
+      - '-config.file=/etc/loki/local-config.yaml'
+
+  tempo:
+    image: grafana/tempo:2.8.2
+    container_name: scawo_tempo
+    ports:
+      - "3200:3200"
+      - "4317:4317"
+    volumes:
+      - ./config/tempo-config.yml:/etc/tempo/local-config.yaml
+    command:
+      - "-config.file=/etc/tempo/local-config.yaml"
+
+  otel-collector:
+    image: otel/opentelemetry-collector:0.136.0
+    container_name: scawo_otel-collector
+    ports:
+      - "4318:4318"
+    volumes:
+      - ./config/otel-collector-config.yml:/etc/otelcol/local-config.yaml
+    command:
+      - '--config=/etc/otelcol/local-config.yaml'
+    depends_on:
+      - tempo
+
+  consul:
+    image: hashicorp/consul:1.21
+    container_name: scawo_consul
+    ports:
+      - "8500:8500"
+    command: "agent -server -ui -node=server-1 -bootstrap-expect=1 -client=0.0.0.0"
+
+  grafana:
+    image: grafana/grafana:12.2.0
+    container_name: scawo_grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config/grafana-datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
